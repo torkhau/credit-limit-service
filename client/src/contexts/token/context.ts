@@ -1,8 +1,8 @@
-import { createContext } from 'react';
+import { createContext, type Dispatch, type SetStateAction } from 'react';
 
 type Token = string | null;
 
 export const TokenContext = createContext<{
   token: Token;
-  setToken: React.Dispatch<React.SetStateAction<Token>>;
+  setToken: Dispatch<SetStateAction<Token>>;
 } | null>(null);
