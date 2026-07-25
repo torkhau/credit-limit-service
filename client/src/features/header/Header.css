@@ -1,0 +1,21 @@
+#header {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 24px;
+
+  .main,
+  .auth {
+    display: inherit;
+  }
+
+  .main {
+    justify-content: space-between;
+    align-items: center;
+  }
+  .auth {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    
+  }
+}
