@@ -1,10 +1,9 @@
-import './App.css';
 import { Separator } from './components/separator';
 import { TokenProvider } from './contexts/token';
 import { Header } from './features/header';
 import { Main } from './features/main';
 
-function App() {
+export function App() {
   return (
     <TokenProvider>
       <Header />
@@ -13,5 +12,3 @@ function App() {
     </TokenProvider>
   );
 }
-
-export default App;
