@@ -1,6 +1,8 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../../common/guards';
 
 @Controller('capacity')
+@UseGuards(AuthGuard)
 export class CapacityController {
   @Get()
   getCapacity() {

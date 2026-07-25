@@ -7,10 +7,7 @@ import { CapacityModule } from './modules/capacity';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/api/(.*)'],
-    }),
+    ServeStaticModule.forRoot({ rootPath: join(__dirname, '..', 'public') }),
     CapacityModule,
   ],
   controllers: [AppController],
