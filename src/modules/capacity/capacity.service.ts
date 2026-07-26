@@ -86,7 +86,9 @@ export class CapacityService {
         0n,
       );
 
-    return this.totalCapacity - reservedCapacity;
+    const availableCapacity = this.totalCapacity - reservedCapacity;
+
+    return availableCapacity > 0n ? availableCapacity : 0n;
   }
 
   private requestedAmount(amount: number, currency: TCurrency = 'USD'): bigint {
