@@ -1,3 +1,3 @@
-import { CURRENCY } from '../constants/currency.constant';
+import { CURRENCY_RATES } from '../constants/currency.constant';
 
-export type Currency = keyof typeof CURRENCY;
+export type TCurrency = keyof typeof CURRENCY_RATES;

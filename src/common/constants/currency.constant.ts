@@ -1,4 +1,4 @@
-export const CURRENCY = {
+export const CURRENCY_RATES = {
   USD: 1,
   EUR: 0.85,
   GBP: 0.75,
