@@ -44,7 +44,7 @@ export class CapacityService {
     };
   }
 
-  addReservation(userId: string, data: ReserveDto): boolean {
+  addReservation(userId: string, data: ReserveDto): void {
     const availableCapacity = this.calculateAvailableCapacity();
     const requestedAmount = BigInt(data.amount * 100);
 
@@ -62,14 +62,13 @@ export class CapacityService {
 
     this.capacityData.create(reservation);
     this.currentOperationId += 1;
-
-    return true;
   }
 
-  releaseReservation(reservationId: string): string {
-    console.log('Reservation released:', reservationId);
+  releaseReservation(userId: string, reservationId: string): void {
+    const result = this.capacityData.delete(userId, reservationId);
 
-    return 'Capacity released';
+    if (!result)
+      throw new Error('Reservation not found or does not belong to user');
   }
 
   updateTotalCapacity(newTotal: number): void {
@@ -80,6 +79,7 @@ export class CapacityService {
     const reservedCapacity = this.capacityData
       .getAll()
       .reduce((acc, item) => acc + item.amount, 0n);
+
     return this.totalCapacity - reservedCapacity;
   }
 }

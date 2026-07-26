@@ -1,7 +1,17 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '../../common/guards';
-import { CapacityService } from './capacity.service';
 import type { AuthenticationRequest } from '../../common/types';
+import { CapacityService } from './capacity.service';
+import { ReleaseParamsDto } from './dto/release.dto';
 import { ReserveDto } from './dto/reserve.dto';
 
 @Controller('capacity')
@@ -16,11 +26,15 @@ export class CapacityController {
 
   @Post('reserve')
   reserveCapacity(@Req() req: AuthenticationRequest, @Body() body: ReserveDto) {
-    return this.capacityService.addReservation(req.userId, body);
+    this.capacityService.addReservation(req.userId, body);
   }
 
-  @Post('release')
-  releaseCapacity() {
-    return this.capacityService.releaseReservation('1');
+  @Post('release/:reservationId')
+  @HttpCode(204)
+  releaseCapacity(
+    @Req() req: AuthenticationRequest,
+    @Param() { reservationId }: ReleaseParamsDto,
+  ) {
+    this.capacityService.releaseReservation(req.userId, reservationId);
   }
 }

@@ -10,13 +10,13 @@ import './Main.css';
 
 type reserveCapacityData = {
   amount: string;
-  currency: string;
+  currency?: string;
 };
 
 export function Main() {
   const [reserveData, setReserveData] = useState<reserveCapacityData>({
     amount: '',
-    currency: '',
+    currency: undefined,
   });
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,7 @@ export function Main() {
     throw new Error('TokenContext or CapacityContext is not available');
 
   const { capacity } = capacityCtx;
-  const { isAuthorized } = tokenCtx;
+  const { token, isAuthorized } = tokenCtx;
 
   const selectedCurrency = reserveData.currency || capacity?.baseCurrency || '';
   const options = capacity?.currencyList.map((currency) => ({
@@ -42,7 +42,7 @@ export function Main() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${tokenCtx.token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           amount: parseFloat(reserveData.amount),
@@ -71,9 +71,7 @@ export function Main() {
         `/api/v1/capacity/release/${reservationId}`,
         {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${tokenCtx.token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
 
@@ -160,7 +158,7 @@ export function Main() {
               disabled={!isAuthorized || loading}
               onClick={handleReserveCapacity}
             >
-              Reserve Capacity
+              Reserve capacity
             </Button>
           </div>
         </div>
