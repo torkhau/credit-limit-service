@@ -20,6 +20,7 @@ export class InMemoryRepository<T extends Identifiable> {
 
   delete(userId: string, operationId: string): boolean {
     const initialLength = this.items.length;
+
     this.items = this.items.filter(
       (item: T) => item.userId !== userId || item.operationId !== operationId,
     );

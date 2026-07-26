@@ -15,8 +15,8 @@ export class CapacityController {
   }
 
   @Post('reserve')
-  reserveCapacity(@Body() body: ReserveDto) {
-    return this.capacityService.addReservation(body);
+  reserveCapacity(@Req() req: AuthenticationRequest, @Body() body: ReserveDto) {
+    return this.capacityService.addReservation(req.userId, body);
   }
 
   @Post('release')

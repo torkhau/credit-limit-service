@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ALLOWED_CURRENCIES } from '../../common/constants';
+import { TCurrency } from '../../common/types';
 import { InMemoryRepository } from '../repositories';
 import { CapacityDto } from './dto/capacity.dto';
 import { ReservationItemDto, ReserveDto } from './dto/reserve.dto';
-import { TCurrency } from '../../common/types';
 
 interface DataItem extends Omit<ReservationItemDto, 'amount' | 'baseAmount'> {
   amount: bigint;
@@ -14,65 +13,72 @@ interface DataItem extends Omit<ReservationItemDto, 'amount' | 'baseAmount'> {
 
 @Injectable()
 export class CapacityService {
-  private capacityData: InMemoryRepository<DataItem>;
-  private currentOperationId: number = 1;
+  private readonly capacityData: InMemoryRepository<DataItem>;
   private readonly baseCurrency: TCurrency = 'USD';
-  private totalCapacity: number = 100;
+  private currentOperationId: number = 1;
+  private totalCapacity: bigint = 100n * 100n;
 
   constructor() {
     this.capacityData = new InMemoryRepository<DataItem>();
   }
 
   accountCapacity(userId: string): CapacityDto {
-    console.log('Fetching capacity for user:', userId);
+    const userReservations = this.capacityData.findAllByUserId(userId);
+    const availableCapacity = this.calculateAvailableCapacity();
 
     return {
-      totalCapacity: this.totalCapacity,
-      reservedCapacity: 44.15,
-      availableCapacity: this.totalCapacity - 44.15,
+      totalCapacity: Number(this.totalCapacity) / 100,
+      availableCapacity: Number(availableCapacity) / 100,
+      reservedCapacity: Number(this.totalCapacity - availableCapacity) / 100,
+      currencyList: ['USD', 'EUR', 'GBP'],
       baseCurrency: this.baseCurrency,
-      currencyList: ALLOWED_CURRENCIES,
-      reservedCapacityList: [
-        {
-          reservationId: '1',
-          amount: 10,
-          currency: 'USD',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          reservationId: '2',
-          amount: 20,
-          baseAmount: 23.53,
-          currency: 'EUR',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          reservationId: '3',
-          amount: 5,
-          baseAmount: 6.67,
-          currency: 'GBP',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          reservationId: '4',
-          amount: 15,
-          baseAmount: 3.95,
-          currency: 'PLN',
-          createdAt: new Date().toISOString(),
-        },
-      ],
+      reservedCapacityList: userReservations.map(
+        ({ reservationId, amount, baseAmount, createdAt }) => ({
+          reservationId,
+          amount: Number(amount) / 100,
+          baseAmount: baseAmount ? Number(baseAmount) / 100 : undefined,
+          createdAt,
+        }),
+      ),
     };
   }
 
-  addReservation(data: ReserveDto): string {
-    console.log('Reservation added:', data);
+  addReservation(userId: string, data: ReserveDto): boolean {
+    const availableCapacity = this.calculateAvailableCapacity();
+    const requestedAmount = BigInt(data.amount * 100);
 
-    return 'Capacity reserved';
+    if (requestedAmount > availableCapacity)
+      throw new Error('Insufficient capacity available');
+
+    const reservation: DataItem = {
+      reservationId: this.currentOperationId.toString(),
+      amount: requestedAmount,
+      baseAmount: data.currency ? BigInt(data.amount * 100) : undefined,
+      userId: userId,
+      operationId: this.currentOperationId.toString(),
+      createdAt: new Date().toISOString(),
+    };
+
+    this.capacityData.create(reservation);
+    this.currentOperationId += 1;
+
+    return true;
   }
 
   releaseReservation(reservationId: string): string {
     console.log('Reservation released:', reservationId);
 
     return 'Capacity released';
+  }
+
+  updateTotalCapacity(newTotal: number): void {
+    this.totalCapacity = BigInt(newTotal * 100);
+  }
+
+  private calculateAvailableCapacity(): bigint {
+    const reservedCapacity = this.capacityData
+      .getAll()
+      .reduce((acc, item) => acc + item.amount, 0n);
+    return this.totalCapacity - reservedCapacity;
   }
 }
