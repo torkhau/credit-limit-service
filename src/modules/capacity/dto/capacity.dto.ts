@@ -6,5 +6,6 @@ export interface CapacityDto {
   reservedCapacity: number;
   availableCapacity: number;
   currencyList: TCurrency[];
+  baseCurrency: TCurrency;
   reservedCapacityList: ReservationItemDto[];
 }

@@ -9,8 +9,9 @@ export class CapacityService {
   accountCapacity(): CapacityDto {
     return {
       totalCapacity: 100,
-      reservedCapacity: 10 + 23.53 + 6.67 + 3.95,
+      reservedCapacity: 44.15,
       availableCapacity: 55.85,
+      baseCurrency: 'USD',
       currencyList: typedKeys(CURRENCY_RATES),
       reservedCapacityList: [
         {
