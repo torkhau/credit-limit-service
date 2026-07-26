@@ -1,98 +1,121 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 💳 Capacity & Credit Limit Management Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A full-stack application for managing program capacity, multi-currency fund reservations, and limit constraints.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🎯 Project Scope & Architecture Note
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+> **Main Focus — Backend:**  
+> The primary purpose of this project is to showcase **backend engineering capabilities** using **NestJS** (custom DTO validation, context-aware `AuthGuard`, multi-currency logic, and precise financial math).
+>
+> **Client & In-Memory Storage:**
+>
+> - **React Frontend:** Built solely as a lightweight testing client to interact with the API without requiring tools like Postman.
+> - **In-Memory Storage:** An `InMemoryRepository` is deliberately used to keep the project lightweight, fast, and easy to run locally without external database dependencies.
+> - **Static Currency Rates:** Supported currencies and exchange rates are hardcoded directly into the application constants for simplicity and predictable testing execution.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 🛠 Tech Stack
 
-## Compile and run the project
+- **Backend:** NestJS, TypeScript, `class-validator`, `class-transformer`
+- **Frontend:** React 19, Vite, TypeScript
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## 💱 Supported Currencies & Rates
 
-# production mode
-$ npm run start:prod
-```
+The system uses `USD` as the base currency. Multi-currency conversions are processed using predefined exchange rates:
 
-## Run tests
+| Currency | Rate relative to USD  |
+| -------- | --------------------- |
+| **USD**  | `1.0` (Base Currency) |
+| **EUR**  | `0.85`                |
+| **GBP**  | `0.75`                |
+| **PLN**  | `3.80`                |
 
-```bash
-# unit tests
-$ npm run test
+---
 
-# e2e tests
-$ npm run test:e2e
+## 🚀 Getting Started
 
-# test coverage
-$ npm run test:cov
-```
+### Prerequisites
 
-## Deployment
+- **Node.js** `>= 24.x`
+- **npm** `>= 11.x`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 1. Installation
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Install dependencies for both client and server applications:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Install frontend dependencies
+cd client
+npm install
+cd ..
+
+# Install backend dependencies
+
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. Build & Run
 
-## Resources
+To build the React client into static assets and compile the NestJS backend together:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# Build the client into static assets and compile NestJS
+npm run build
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Start the NestJS server
 
-## Support
+npm run start
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Once started, open `http://localhost:3000` in your browser. NestJS serves both the static React client interface and the REST API endpoints.
 
-## Stay in touch
+### 3. Development Mode (Optional)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+If you prefer hot-reloading during development:
 
-## License
+```bash
+# Terminal 1 — Backend
+npm run start:dev
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Terminal 2 — Frontend
+cd client
+npm run dev
+```
+
+---
+
+## 🔑 Authentication
+
+Protected endpoints require a Bearer Token with the `-tkn` suffix:
+
+```http
+Authorization: Bearer <user_id>-tkn
+```
+
+_Example:_ `Authorization: Bearer user123-tkn` (where `user123` is extracted as the `userId`).
+
+---
+
+## 📡 API Endpoints
+
+Base URL: `http://localhost:3000/api/v1/capacity`
+
+| Method | Endpoint                | Description                                  | Auth Required |
+| ------ | ----------------------- | -------------------------------------------- | ------------- |
+| GET    | /                       | Fetch capacity metrics & active reservations | YES           |
+| POST   | /reserve                | Reserve capacity in a specified currency     | YES           |
+| POST   | /release/:reservationId | Release an active reservation by ID          | YES           |
+
+### Sample Payload (`POST /reserve`):
+
+```json
+{
+  "amount": "100.50",
+  "currency": "EUR"
+}
+```
