@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ALLOWED_CURRENCIES } from '../../common/constants';
 import { TCurrency } from '../../common/types';
+import { convertToUSDCents } from '../../common/utils';
 import { InMemoryRepository } from '../repositories';
 import { CapacityDto } from './dto/capacity.dto';
 import { ReservationItemDto, ReserveDto } from './dto/reserve.dto';
@@ -9,14 +10,13 @@ interface DataItem extends Omit<ReservationItemDto, 'amount' | 'baseAmount'> {
   amount: bigint;
   baseAmount?: bigint;
   userId: string;
-  operationId: string;
 }
 
 @Injectable()
 export class CapacityService {
   private readonly capacityData: InMemoryRepository<DataItem>;
   private readonly baseCurrency: TCurrency = 'USD';
-  private currentOperationId: number = 1;
+  private currentReservationId: number = 1;
   private totalCapacity: bigint = 100n * 100n;
 
   constructor() {
@@ -34,9 +34,10 @@ export class CapacityService {
       currencyList: ALLOWED_CURRENCIES,
       baseCurrency: this.baseCurrency,
       reservedCapacityList: userReservations.map(
-        ({ reservationId, amount, baseAmount, createdAt }) => ({
+        ({ reservationId, amount, baseAmount, createdAt, currency }) => ({
           reservationId,
           amount: Number(amount) / 100,
+          currency,
           baseAmount: baseAmount ? Number(baseAmount) / 100 : undefined,
           createdAt,
         }),
@@ -46,22 +47,22 @@ export class CapacityService {
 
   addReservation(userId: string, data: ReserveDto): void {
     const availableCapacity = this.calculateAvailableCapacity();
-    const requestedAmount = BigInt(data.amount * 100);
+    const requestedAmount = this.requestedAmount(data.amount, data.currency);
 
     if (requestedAmount > availableCapacity)
       throw new Error('Insufficient capacity available');
 
     const reservation: DataItem = {
-      reservationId: this.currentOperationId.toString(),
-      amount: requestedAmount,
-      baseAmount: data.currency ? BigInt(data.amount * 100) : undefined,
+      reservationId: this.currentReservationId.toString(),
+      amount: BigInt(Math.round(data.amount * 100)),
+      currency: data.currency,
+      baseAmount: data.currency ? requestedAmount : undefined,
       userId: userId,
-      operationId: this.currentOperationId.toString(),
       createdAt: new Date().toISOString(),
     };
 
     this.capacityData.create(reservation);
-    this.currentOperationId += 1;
+    this.currentReservationId += 1;
   }
 
   releaseReservation(userId: string, reservationId: string): void {
@@ -81,5 +82,11 @@ export class CapacityService {
       .reduce((acc, item) => acc + item.amount, 0n);
 
     return this.totalCapacity - reservedCapacity;
+  }
+
+  private requestedAmount(amount: number, currency: TCurrency = 'USD'): bigint {
+    return currency === this.baseCurrency
+      ? BigInt(Math.round(amount * 100))
+      : convertToUSDCents(amount, currency);
   }
 }

@@ -1,6 +1,6 @@
 interface Identifiable {
   userId: string;
-  operationId: string;
+  reservationId: string;
 }
 
 export class InMemoryRepository<T extends Identifiable> {
@@ -18,11 +18,12 @@ export class InMemoryRepository<T extends Identifiable> {
     return this.items.filter(({ userId }: T) => userId === id);
   }
 
-  delete(userId: string, operationId: string): boolean {
+  delete(userId: string, reservationId: string): boolean {
     const initialLength = this.items.length;
 
     this.items = this.items.filter(
-      (item: T) => item.userId !== userId || item.operationId !== operationId,
+      (item: T) =>
+        item.userId !== userId || item.reservationId !== reservationId,
     );
 
     return this.items.length < initialLength;
