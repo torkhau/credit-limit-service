@@ -3,19 +3,41 @@
   flex-direction: column;
   padding: 8px 24px;
 
-  .main,
-  .auth {
-    display: inherit;
+  .capacity {
+    display: flex;
+    align-items: stretch;
   }
 
-  .main {
+  .capacity {
     justify-content: space-between;
     align-items: center;
+
+    & > * {
+      display: flex;
+      flex: 1 1 0px;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .current-capacity {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .reserve-capacity {
+      display: flex;
+    }
   }
-  .auth {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    
+
+  .card {
+    min-width: 150px;
+    padding: 0 6px;
+    background-color: var(--social-bg);
+    border-radius: 8px;
+
+    p {
+      text-align: left;
+    }
   }
 }
