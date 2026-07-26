@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ALLOWED_CURRENCIES } from '../../common/constants';
 import { TCurrency } from '../../common/types';
 import { InMemoryRepository } from '../repositories';
 import { CapacityDto } from './dto/capacity.dto';
@@ -30,7 +31,7 @@ export class CapacityService {
       totalCapacity: Number(this.totalCapacity) / 100,
       availableCapacity: Number(availableCapacity) / 100,
       reservedCapacity: Number(this.totalCapacity - availableCapacity) / 100,
-      currencyList: ['USD', 'EUR', 'GBP'],
+      currencyList: ALLOWED_CURRENCIES,
       baseCurrency: this.baseCurrency,
       reservedCapacityList: userReservations.map(
         ({ reservationId, amount, baseAmount, createdAt }) => ({

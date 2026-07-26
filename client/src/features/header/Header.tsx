@@ -2,18 +2,21 @@ import { useContext, useState } from 'react';
 import { Button } from '../../components/button';
 import { Input } from '../../components/input';
 import { TokenContext } from '../../contexts/token';
+import { CapacityContext } from '../../contexts/userData';
 import './Header.css';
 
 export function Header() {
-  const context = useContext(TokenContext);
+  const tokenCtx = useContext(TokenContext);
+  const capacityCtx = useContext(CapacityContext);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  if (!context) {
-    throw new Error('TokenContext is not available');
+  if (!tokenCtx || !capacityCtx) {
+    throw new Error('TokenContext or CapacityContext is not available');
   }
 
-  const { token, setToken } = context;
+  const { token, setToken } = tokenCtx;
+  const { setCapacity } = capacityCtx;
 
   const handleTokenChange = (value: string) => {
     setToken(value);
@@ -27,6 +30,7 @@ export function Header() {
       });
       if (response.ok) {
         setAuthenticated(true);
+        setCapacity(await response.json());
       } else {
         setAuthenticated(false);
       }

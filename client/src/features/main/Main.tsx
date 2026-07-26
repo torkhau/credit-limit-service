@@ -1,1 +1,3 @@
-export function Main() { return <div>Main</div>; }
+import './Main.css';
+
+export function Main() { return <main id="main">Main</main>; }
