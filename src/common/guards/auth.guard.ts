@@ -4,11 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
-
-interface RequestWithUser extends Request {
-  user?: string;
-}
+import { RequestWithUser } from '../types';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,7 +13,7 @@ export class AuthGuard implements CanActivate {
     const token = this.getTokenFromHeader(request);
 
     if (token && this.validateToken(token)) {
-      request.user = token.slice(0, -4);
+      request.userId = token.slice(0, -4);
       return true;
     }
 
