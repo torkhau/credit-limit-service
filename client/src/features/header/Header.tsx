@@ -8,14 +8,13 @@ import './Header.css';
 export function Header() {
   const tokenCtx = useContext(TokenContext);
   const capacityCtx = useContext(CapacityContext);
-  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
 
   if (!tokenCtx || !capacityCtx) {
     throw new Error('TokenContext or CapacityContext is not available');
   }
 
-  const { token, setToken } = tokenCtx;
+  const { token, setToken, isAuthorized, setIsAuthorized } = tokenCtx;
   const { setCapacity } = capacityCtx;
 
   const handleTokenChange = (value: string) => {
@@ -29,10 +28,10 @@ export function Header() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
-        setAuthenticated(true);
+        setIsAuthorized(true);
         setCapacity(await response.json());
       } else {
-        setAuthenticated(false);
+        setIsAuthorized(false);
       }
     } finally {
       setLoading(false);
@@ -53,7 +52,7 @@ export function Header() {
             onChange={handleTokenChange}
           />
         </div>
-        <p>status: {loading ? 'Loading...' : authenticated ? 'Authenticated' : 'Not Authenticated'}</p>
+        <p>status: {loading ? 'Loading...' : isAuthorized ? 'Authenticated' : 'Not Authenticated'}</p>
       </section>
     </header>
   );
