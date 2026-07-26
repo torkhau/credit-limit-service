@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ALLOWED_CURRENCIES } from '../../common/constants';
 import { TCurrency } from '../../common/types';
 import { convertToUSDCents } from '../../common/utils';
@@ -50,7 +50,7 @@ export class CapacityService {
     const requestedAmount = this.requestedAmount(data.amount, data.currency);
 
     if (requestedAmount > availableCapacity)
-      throw new Error('Insufficient capacity available');
+      throw new BadRequestException('Insufficient capacity available');
 
     const reservation: DataItem = {
       reservationId: this.currentReservationId.toString(),
@@ -69,7 +69,9 @@ export class CapacityService {
     const result = this.capacityData.delete(userId, reservationId);
 
     if (!result)
-      throw new Error('Reservation not found or does not belong to user');
+      throw new BadRequestException(
+        'Reservation not found or does not belong to user',
+      );
   }
 
   updateTotalCapacity(newTotal: number): void {
@@ -79,7 +81,10 @@ export class CapacityService {
   private calculateAvailableCapacity(): bigint {
     const reservedCapacity = this.capacityData
       .getAll()
-      .reduce((acc, item) => acc + item.amount, 0n);
+      .reduce(
+        (acc, { amount, baseAmount }) => acc + (baseAmount ?? amount),
+        0n,
+      );
 
     return this.totalCapacity - reservedCapacity;
   }

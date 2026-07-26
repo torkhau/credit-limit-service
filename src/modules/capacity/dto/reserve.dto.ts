@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsIn,
   IsNotEmpty,
@@ -10,6 +11,11 @@ import type { TCurrency } from '../../../common/types';
 
 export class ReserveDto {
   @IsNotEmpty()
+  @Transform(({ value }: { value: unknown }) => {
+    const parsed = typeof value === 'string' ? parseFloat(value) : value;
+
+    return typeof parsed === 'number' && !isNaN(parsed) ? parsed : value;
+  })
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
   amount!: number;
