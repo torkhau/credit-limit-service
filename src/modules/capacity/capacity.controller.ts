@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards';
 import { CapacityService } from './capacity.service';
 import type { AuthenticationRequest } from '../../common/types';
+import { ReserveDto } from './dto/reserve.dto';
 
 @Controller('capacity')
 @UseGuards(AuthGuard)
@@ -14,11 +15,8 @@ export class CapacityController {
   }
 
   @Post('reserve')
-  reserveCapacity() {
-    return this.capacityService.addReservation({
-      amount: 10,
-      currency: 'USD',
-    });
+  reserveCapacity(@Body() body: ReserveDto) {
+    return this.capacityService.addReservation(body);
   }
 
   @Post('release')
