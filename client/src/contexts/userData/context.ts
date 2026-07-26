@@ -3,6 +3,7 @@ import { createContext, type Dispatch, type SetStateAction } from 'react';
 interface ReservationItem {
   reservationId: string;
   amount: number;
+  currency?: string;
   baseAmount?: number;
   createdAt: string;
 }

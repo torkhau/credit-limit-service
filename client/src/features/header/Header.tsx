@@ -31,6 +31,9 @@ export function Header() {
         setIsAuthorized(true);
         setCapacity(await response.json());
       } else {
+        const errorData = await response.json();
+        console.error('Failed to refresh data:', errorData);
+        setCapacity(null);
         setIsAuthorized(false);
       }
     } finally {

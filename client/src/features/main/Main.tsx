@@ -45,7 +45,7 @@ export function Main() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          amount: parseFloat(reserveData.amount),
+          amount: reserveData.amount,
           currency: reserveData.currency,
         }),
       });
@@ -98,30 +98,15 @@ export function Main() {
             <div className="current-capacity">
               <div className="card">
                 <p>Total</p>
-                <h2>
-                  {numberToCurrency(
-                    capacity.totalCapacity,
-                    capacity.baseCurrency,
-                  )}
-                </h2>
+                <h2>{numberToCurrency(capacity.totalCapacity)}</h2>
               </div>
               <div className="card">
                 <p>Reserved</p>
-                <h2>
-                  {numberToCurrency(
-                    capacity.reservedCapacity,
-                    capacity.baseCurrency,
-                  )}
-                </h2>
+                <h2>{numberToCurrency(capacity.reservedCapacity)}</h2>
               </div>
               <div className="card">
                 <p>Available</p>
-                <h2>
-                  {numberToCurrency(
-                    capacity.availableCapacity,
-                    capacity.baseCurrency,
-                  )}
-                </h2>
+                <h2>{numberToCurrency(capacity.availableCapacity)}</h2>
               </div>
               <div className="card">
                 <p>Base currency</p>
@@ -173,44 +158,36 @@ export function Main() {
               <tr>
                 <th>Reservation ID</th>
                 <th>Amount</th>
-                <th>Amount in {capacity?.baseCurrency || ''}</th>
                 <th>Currency</th>
+                <th>Amount in {capacity.baseCurrency}</th>
                 <th>Created At</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {capacity.reservedCapacityList.map((reservation) => (
-                <tr key={reservation.reservationId}>
-                  <td>{reservation.reservationId}</td>
-                  <td>
-                    {numberToCurrency(
-                      reservation.amount,
-                      capacity.baseCurrency,
-                    )}
-                  </td>
-                  <td>
-                    {reservation.baseAmount !== undefined
-                      ? numberToCurrency(
-                          reservation.baseAmount,
-                          capacity.baseCurrency,
-                        )
-                      : 'N/A'}
-                  </td>
-                  <td>{/*reservation.currency*/}</td>
-                  <td>{new Date(reservation.createdAt).toLocaleString()}</td>
-                  <td>
-                    <Button
-                      disabled={!isAuthorized || loading}
-                      onClick={() =>
-                        handleReleaseCapacity(reservation.reservationId)
-                      }
-                    >
-                      Release
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              {capacity.reservedCapacityList.map(
+                ({ reservationId, baseAmount, ...rest }) => (
+                  <tr key={reservationId}>
+                    <td>{reservationId}</td>
+                    <td>{numberToCurrency(rest.amount)}</td>
+                    <td>{rest.currency ?? capacity.baseCurrency}</td>
+                    <td>
+                      {baseAmount !== undefined
+                        ? numberToCurrency(baseAmount)
+                        : ''}
+                    </td>
+                    <td>{new Date(rest.createdAt).toLocaleString()}</td>
+                    <td>
+                      <Button
+                        disabled={!isAuthorized || loading}
+                        onClick={() => handleReleaseCapacity(reservationId)}
+                      >
+                        Release
+                      </Button>
+                    </td>
+                  </tr>
+                ),
+              )}
             </tbody>
           </table>
         ) : (
