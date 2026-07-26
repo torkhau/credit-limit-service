@@ -1,12 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CURRENCY_RATES } from '../../common/constants';
 import { typedKeys } from '../../common/utils';
+import { InMemoryRepository } from '../repositories';
 import { CapacityDto } from './dto/capacity.dto';
-import { ReserveDto } from './dto/reserve.dto';
+import { ReservationItemDto, ReserveDto } from './dto/reserve.dto';
+
+interface DataItem extends Omit<ReservationItemDto, 'amount' | 'baseAmount'> {
+  amount: bigint;
+  baseAmount?: bigint;
+  userId: string;
+  operationId: string;
+}
 
 @Injectable()
 export class CapacityService {
-  accountCapacity(): CapacityDto {
+  private capacityData: InMemoryRepository<DataItem>;
+  private currentOperationId: number = 1;
+
+  constructor() {
+    this.capacityData = new InMemoryRepository<DataItem>();
+  }
+
+  accountCapacity(userId: string): CapacityDto {
+    console.log('Fetching capacity for user:', userId);
+
     return {
       totalCapacity: 100,
       reservedCapacity: 44.15,

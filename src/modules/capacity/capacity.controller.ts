@@ -1,6 +1,7 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards';
 import { CapacityService } from './capacity.service';
+import type { AuthenticationRequest } from '../../common/types';
 
 @Controller('capacity')
 @UseGuards(AuthGuard)
@@ -8,8 +9,8 @@ export class CapacityController {
   constructor(private readonly capacityService: CapacityService) {}
 
   @Get()
-  getCapacity() {
-    return this.capacityService.accountCapacity();
+  getCapacity(@Req() req: AuthenticationRequest) {
+    return this.capacityService.accountCapacity(req.userId);
   }
 
   @Post('reserve')
