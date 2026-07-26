@@ -3,7 +3,7 @@ import './Input.css';
 
 interface InputProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
   label?: string;
 }
@@ -11,7 +11,7 @@ interface InputProps {
 export function Input({ value, onChange, placeholder, label }: InputProps) {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+    onChange?.(e.target.value);
   }
 
   return (

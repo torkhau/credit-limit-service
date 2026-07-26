@@ -1,11 +1,11 @@
 #main {
   display: flex;
   flex-direction: column;
-  padding: 8px 24px;
 
   .capacity {
     display: flex;
     align-items: stretch;
+    padding: 8px 24px;
   }
 
   .capacity {
@@ -19,14 +19,11 @@
       flex-direction: column;
     }
 
-    .current-capacity {
+    .current-capacity,
+    .reserve-capacity {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-    }
-
-    .reserve-capacity {
-      display: flex;
     }
   }
 
@@ -38,6 +35,23 @@
 
     p {
       text-align: left;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--social-bg);
+    }
+
+    th {
+      background-color: var(--social-bg);
     }
   }
 }

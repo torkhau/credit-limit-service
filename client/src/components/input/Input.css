@@ -1,3 +1,9 @@
 .input {
   min-width: 240px;
 }
+
+label {
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+}
