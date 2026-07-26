@@ -10,19 +10,20 @@ export class InMemoryRepository<T extends Identifiable> {
     this.items.push(item);
   }
 
-  findAll(userId: string): T[] {
-    return this.items.filter((item: T) => item.userId === userId);
+  getAll(): T[] {
+    return [...this.items];
   }
 
-  findById(userId: string, operationId: string): T | undefined {
-    return this.items.find(
-      (item: T) => item.userId === userId && item.operationId === operationId,
-    );
+  findAllByUserId(id: string): T[] {
+    return this.items.filter(({ userId }: T) => userId === id);
   }
 
-  delete(userId: string, operationId: string): void {
+  delete(userId: string, operationId: string): boolean {
+    const initialLength = this.items.length;
     this.items = this.items.filter(
       (item: T) => item.userId !== userId || item.operationId !== operationId,
     );
+
+    return this.items.length < initialLength;
   }
 }
