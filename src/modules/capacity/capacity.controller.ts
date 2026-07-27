@@ -25,16 +25,19 @@ export class CapacityController {
   }
 
   @Post('reserve')
-  reserveCapacity(@Req() req: AuthenticationRequest, @Body() body: ReserveDto) {
-    this.capacityService.addReservation(req.userId, body);
+  async reserveCapacity(
+    @Req() req: AuthenticationRequest,
+    @Body() body: ReserveDto,
+  ) {
+    await this.capacityService.addReservation(req.userId, body);
   }
 
   @Post('release/:reservationId')
   @HttpCode(204)
-  releaseCapacity(
+  async releaseCapacity(
     @Req() req: AuthenticationRequest,
     @Param() { reservationId }: ReleaseParamsDto,
   ) {
-    this.capacityService.releaseReservation(req.userId, reservationId);
+    await this.capacityService.releaseReservation(req.userId, reservationId);
   }
 }

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ALLOWED_CURRENCIES } from '../../common/constants';
 import { TCurrency } from '../../common/types';
-import { convertToUSDCents } from '../../common/utils';
+import { AsyncQueue, convertToUSDCents } from '../../common/utils';
 import { InMemoryRepository } from '../repositories';
 import { CapacityDto } from './dto/capacity.dto';
 import { ReservationItemDto, ReserveDto } from './dto/reserve.dto';
@@ -14,14 +14,11 @@ interface DataItem extends Omit<ReservationItemDto, 'amount' | 'baseAmount'> {
 
 @Injectable()
 export class CapacityService {
-  private readonly capacityData: InMemoryRepository<DataItem>;
+  private readonly capacityData = new InMemoryRepository<DataItem>();
+  private readonly asyncQueue = new AsyncQueue();
   private readonly baseCurrency: TCurrency = 'USD';
   private currentReservationId: number = 1;
   private totalCapacity: bigint = 100n * 100n;
-
-  constructor() {
-    this.capacityData = new InMemoryRepository<DataItem>();
-  }
 
   accountCapacity(userId: string): CapacityDto {
     const userReservations = this.capacityData.findAllByUserId(userId);
@@ -45,33 +42,17 @@ export class CapacityService {
     };
   }
 
-  addReservation(userId: string, data: ReserveDto): void {
-    const availableCapacity = this.calculateAvailableCapacity();
-    const requestedAmount = this.requestedAmount(data.amount, data.currency);
-
-    if (requestedAmount > availableCapacity)
-      throw new BadRequestException('Insufficient capacity available');
-
-    const reservation: DataItem = {
-      reservationId: this.currentReservationId.toString(),
-      amount: BigInt(Math.round(data.amount * 100)),
-      currency: data.currency,
-      baseAmount: data.currency ? requestedAmount : undefined,
-      userId: userId,
-      createdAt: new Date().toISOString(),
-    };
-
-    this.capacityData.create(reservation);
-    this.currentReservationId += 1;
+  async addReservation(userId: string, data: ReserveDto): Promise<void> {
+    await this.asyncQueue.enqueue(() => this.addReservationAsync(userId, data));
   }
 
-  releaseReservation(userId: string, reservationId: string): void {
-    const result = this.capacityData.delete(userId, reservationId);
-
-    if (!result)
-      throw new BadRequestException(
-        'Reservation not found or does not belong to user',
-      );
+  async releaseReservation(
+    userId: string,
+    reservationId: string,
+  ): Promise<void> {
+    await this.asyncQueue.enqueue(() =>
+      this.releaseReservationAsync(userId, reservationId),
+    );
   }
 
   updateTotalCapacity(newTotal: number): void {
@@ -95,5 +76,34 @@ export class CapacityService {
     return currency === this.baseCurrency
       ? BigInt(Math.round(amount * 100))
       : convertToUSDCents(amount, currency);
+  }
+
+  private addReservationAsync(userId: string, data: ReserveDto): void {
+    const availableCapacity = this.calculateAvailableCapacity();
+    const requestedAmount = this.requestedAmount(data.amount, data.currency);
+
+    if (requestedAmount > availableCapacity)
+      throw new BadRequestException('Insufficient capacity available');
+
+    const reservation: DataItem = {
+      reservationId: this.currentReservationId.toString(),
+      amount: BigInt(Math.round(data.amount * 100)),
+      currency: data.currency,
+      baseAmount: data.currency ? requestedAmount : undefined,
+      userId: userId,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.capacityData.create(reservation);
+    this.currentReservationId += 1;
+  }
+
+  private releaseReservationAsync(userId: string, reservationId: string): void {
+    const result = this.capacityData.delete(userId, reservationId);
+
+    if (!result)
+      throw new BadRequestException(
+        'Reservation not found or does not belong to user',
+      );
   }
 }
