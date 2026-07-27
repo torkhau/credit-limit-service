@@ -7,7 +7,7 @@ A full-stack application for managing program capacity, multi-currency fund rese
 ## 🎯 Project Scope & Architecture Note
 
 > **Main Focus — Backend:**  
-> The primary purpose of this project is to showcase **backend engineering capabilities** using **NestJS** (custom DTO validation, context-aware `AuthGuard`, multi-currency logic, and precise financial math).
+> The primary purpose of this project is to showcase **backend engineering capabilities** using **NestJS** (custom DTO validation, context-aware `AuthGuard`, multi-currency logic, and precise financial math, and async message processing with **Kafka**).
 >
 > **Client & In-Memory Storage:**
 >
@@ -19,8 +19,9 @@ A full-stack application for managing program capacity, multi-currency fund rese
 
 ## 🛠 Tech Stack
 
-- **Backend:** NestJS, TypeScript, `class-validator`, `class-transformer`
+- **Backend:** NestJS (HTTP REST & Kafka Microservice), TypeScript, `kafkajs`, `class-validator`, `class-transformer`
 - **Frontend:** React 19, Vite, TypeScript
+- **Infrastructure:** Apache Kafka (KRaft mode via Docker Compose)
 
 ---
 
@@ -43,6 +44,7 @@ The system uses `USD` as the base currency. Multi-currency conversions are proce
 
 - **Node.js** `>= 20.x`
 - **npm** `>= 10.x`
+- **Docker & Docker Compose** (required for running Apache Kafka broker)
 
 ### 1. Installation
 
@@ -55,7 +57,6 @@ npm install
 cd ..
 
 # Install backend dependencies
-
 npm install
 ```
 
@@ -68,9 +69,9 @@ To build the React client into static assets and compile the NestJS backend toge
 npm run build
 
 # Start the NestJS server
-
 npm run start
 ```
+ℹ️ Note: The `npm run start` command automatically executes `docker compose up -d --wait` to ensure the Kafka broker is healthy and the `totalCapacity-reconciliation` topic is initialized before NestJS connects.
 
 Once started, open `http://localhost:3000` in your browser. NestJS serves both the static React client interface and the REST API endpoints.
 
@@ -79,12 +80,32 @@ Once started, open `http://localhost:3000` in your browser. NestJS serves both t
 If you prefer hot-reloading during development:
 
 ```bash
-# Terminal 1 — Backend
+# 1. Start Kafka infrastructure (run once in background)
+npm run kafka
+
+# 2. Start NestJS backend in watch mode
 npm run start:dev
 
-# Terminal 2 — Frontend
+# 3. Start React client in dev mode (in a separate terminal)
 cd client
 npm run dev
+```
+---
+
+## 🔄 Kafka Event Integration
+
+The service consumes events from Apache Kafka for total capacity reconciliation and management.
+
+- **Broker Address:** `localhost:9092`
+- **Consumer Group:** `capacity-service-consumer`
+- **Topic:** `totalCapacity-reconciliation`
+
+### Testing Kafka Message Ingestion
+
+You can test event consumption by firing a test event using the included test script:
+
+```bash
+npm run kafka:test
 ```
 
 ---
