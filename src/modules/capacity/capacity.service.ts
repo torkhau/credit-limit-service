@@ -110,6 +110,6 @@ export class CapacityService {
   }
 
   private updateTotalCapacityAsync(newTotal: number): void {
-    this.totalCapacity = BigInt(newTotal * 100);
+    this.totalCapacity = BigInt(Math.round(newTotal * 100));
   }
 }
