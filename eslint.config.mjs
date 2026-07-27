@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs', '**/client/**'],
+    ignores: ['eslint.config.mjs', '**/client/**', 'testKafkaProducer.js'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

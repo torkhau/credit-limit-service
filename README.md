@@ -41,8 +41,8 @@ The system uses `USD` as the base currency. Multi-currency conversions are proce
 
 ### Prerequisites
 
-- **Node.js** `>= 24.x`
-- **npm** `>= 11.x`
+- **Node.js** `>= 20.x`
+- **npm** `>= 10.x`
 
 ### 1. Installation
 

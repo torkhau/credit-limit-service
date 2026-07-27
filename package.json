@@ -8,7 +8,7 @@
     "build:client": "npm run build --prefix client",
     "build": "npm run build:client && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "npm run kafka && nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -17,7 +17,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "kafka": "docker compose down && docker compose up -d --wait",
+    "kafka:down": "docker compose down",
+    "kafka:test": "node testKafkaProducer.js"
   },
   "engines": {
     "npm": ">=10.0.0",
@@ -26,10 +29,12 @@
   "dependencies": {
     "@nestjs/common": "^11.0.17",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/microservices": "^11.1.28",
     "@nestjs/platform-express": "^11.1.11",
     "@nestjs/serve-static": "^5.0.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "kafkajs": "^2.2.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
