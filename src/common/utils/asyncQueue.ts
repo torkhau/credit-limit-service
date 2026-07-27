@@ -34,6 +34,7 @@ export class AsyncQueue {
     } finally {
       this.isProcessing = false;
     }
+
     void this.processQueue();
   }
 }

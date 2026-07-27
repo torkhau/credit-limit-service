@@ -55,8 +55,10 @@ export class CapacityService {
     );
   }
 
-  updateTotalCapacity(newTotal: number): void {
-    this.totalCapacity = BigInt(newTotal * 100);
+  async updateTotalCapacity(newTotal: number): Promise<void> {
+    await this.asyncQueue.enqueue(() =>
+      this.updateTotalCapacityAsync(newTotal),
+    );
   }
 
   private calculateAvailableCapacity(): bigint {
@@ -105,5 +107,9 @@ export class CapacityService {
       throw new BadRequestException(
         'Reservation not found or does not belong to user',
       );
+  }
+
+  private updateTotalCapacityAsync(newTotal: number): void {
+    this.totalCapacity = BigInt(newTotal * 100);
   }
 }
